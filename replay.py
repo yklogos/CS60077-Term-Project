@@ -15,7 +15,12 @@ class UniformReplayBuffer:
         self.buffer.append(transition)
     
     def sample(self, batch_size):
-        return random.sample(self.buffer, batch_size)
+#         return random.sample(self.buffer, batch_size)
+        buffer_sample = random.sample(self.buffer, batch_size)
+        for transition in buffer_sample:   # MRU deque O(N^2)
+            self.buffer.remove(transition)
+            self.buffer.appendleft(transition)
+        return buffer_sample
 
 class LSTReplayBuffer:
     def __init__(self, long_capacity, short_capacity, error_threshold=0.5):
@@ -59,5 +64,9 @@ class CombinedReplayBuffer:
         self.buffer.append(transition)
     
     def sample(self, batch_size):
-        return random.sample(self.buffer, batch_size-1) + [self.buffer[-1]]
+        buffer_sample = random.sample(self.buffer, batch_size-1) + [self.buffer[-1]]
+        for transition in buffer_sample:   # MRU deque O(N^2)
+            self.buffer.remove(transition)
+            self.buffer.appendleft(transition)
+        return buffer_sample
 ###MODIFIED###

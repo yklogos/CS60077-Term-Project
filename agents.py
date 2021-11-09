@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import random
+
 
 class ApproximateAgent:
     """
@@ -29,10 +31,10 @@ class ApproximateAgent:
             if not is_table:
                 state = torch.FloatTensor(state)
                 q_values = self.q_network(state)
-                action = torch.argmax(q_values).item()
             else:
                 q_values = self.q_network[state]
-                action = np.argmax(q_values)
+            max_val_idxs = [i for i,w in enumerate(q_values) if w==max(q_values)]
+            action = random.sample(max_val_idxs,1)[0]
             return action
 
     def get_state_value(self, state):
@@ -149,6 +151,15 @@ class TabularBufferQAgent(ApproximateAgent):
         state_batch, action_batch, next_state_batch, reward_batch, done_batch = zip(*transitions)
         
         for state, action, next_state, reward, done in zip(state_batch, action_batch, next_state_batch, reward_batch, done_batch):
+            
+#             print("agents.py 153")
+#             print(f"self.q_network[state][action]: {self.q_network[state][action]}")
+#             print(f"self.q_network[state]: {self.q_network[next_state]}")
+#             print(f"reward: {reward}")
+#             print(f"self.alpha: {self.alpha}")
+#             print(f"self.gamma: {self.gamma}")
+#             print("agents.py 159")
+            
             self.q_network[state][action] += self.alpha * (reward + self.gamma * max(self.q_network[next_state]) - \
                                                            self.q_network[state][action]) 
         
