@@ -40,7 +40,7 @@ GAMMA = 1
 MAX_STEPS = None
 NB_EPISODES = 100
 REPLAY_BUFFER_SIZES = [100, 1000, 10000, 100000, 1000000]
-REPLAY_BUFFER_TYPE = 'uniform'  # ['combined', 'uniform']
+REPLAY_BUFFER_TYPE = 'combined'  # ['combined', 'uniform']
 
 def pos_to_state(pos):  # pos: (row, col)
     return pos[0]*ENV_WIDTH + pos[1]
