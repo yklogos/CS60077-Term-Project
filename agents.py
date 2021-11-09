@@ -151,7 +151,7 @@ class TabularBufferQAgent(ApproximateAgent):
         #TODO: either or
         for state, action, next_state, reward, done in zip(state_batch, action_batch, next_state_batch, reward_batch, done_batch):
             self.q_network[state][action] += self.alpha * (reward + self.gamma * max(self.q_network[next_state]) - \
-                                                           self.q_network[state][action])
+                                                           self.q_network[state][action]) 
         
 #         self.q_network[state_batch][action_batch] += alpha * (reward_batch + gamma * np.max(self.q_network[next_state_batch],axis=1) - \
 #                                                               self.q_network[state_batch][action_batch])

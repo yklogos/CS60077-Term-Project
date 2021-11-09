@@ -1,5 +1,12 @@
 ###MODIFIED###
 #!/usr/bin/env python3
+
+TODO:
+    1. verify results
+    2. find a way to remove unecessary actions
+    3. implementing -1 reward at each step
+    4. implement PEB
+
 import copy
 import gym
 import matplotlib.pyplot as plt
@@ -22,20 +29,21 @@ REPLAY_BUFFER_SIZES = [100, 1000, 10000, 100000, 1000000][:1]
 # init enviornment variables
 env = get_grid_world(seed=SEED)
 NUM_STATES = len(env.env.grid.grid)
-NUM_ACTIONS = len(list(env.env.actions))
+ACTIONS = list(env.actions)
+NUM_ACTIONS = len(ACTIONS)
 ENV_WIDTH = env.env.width
-actions_idx_dict = {v:i for i,v in enumerate(list(env.env.actions))}
+actions_idx_dict = {v:i for i,v in enumerate(list(ACTIONS))}
 
 def pos_to_state(pos):  # pos: (row, col)
     return pos[0]*ENV_WIDTH + pos[1]
 
+start_q_network = np.zeros(NUM_STATES, NUM_ACTIONS) # init all values to 0
 # init q_network value of terminal states to 0
-start_q_network = np.random.rand(NUM_STATES, NUM_ACTIONS)
-for i,cell in enumerate(env.env.grid.grid):  
-    if cell is None:
-        continue
-    if cell.type == "goal":
-        start_q_network[pos_to_state(cell.init_pos)] = np.zeros(NUM_ACTIONS)
+# for i,cell in enumerate(env.env.grid.grid):  
+#     if cell is None:
+#         continue
+#     if cell.type == "goal":
+#         start_q_network[pos_to_state(cell.init_pos)] = np.zeros(NUM_ACTIONS)
 
 # For reproducibility
 np.random.seed(SEED)
@@ -59,7 +67,6 @@ for replay_buffer_size in REPLAY_BUFFER_SIZES:
     epi_returns = []
     for i in range(NB_EPISODES):
         obs = env.reset()
-        info = {'timeout': False}
         state = pos_to_state(env.agent_pos)
         epi_return = 0
         
@@ -73,7 +80,7 @@ for replay_buffer_size in REPLAY_BUFFER_SIZES:
             action = agent.get_action(state, is_table=True)
             next_obs, rew, done, info = env.step(action)
             next_state = pos_to_state(env.agent_pos)
-            transition = (state, action, next_state, rew, done)
+            transition = (state, action, next_state, rew - 1, done) # -1 reward at each step??
             replay_buffer.append(transition)
             epi_return +=  rew
             agent.learn()
