@@ -45,4 +45,24 @@ class LSTReplayBuffer:
         return random.sample(self.long_buffer, batch_size)
 
     def short_sample(self, batch_size):
+        ###ORIGINAL###
         return random.sample(self.long_buffer, batch_size)
+        ###ORIGINAL###
+        ###MODIFIED###
+#         return random.sample(self.short_buffer, batch_size)
+        ###MODIFIED###
+
+###MODIFIED###
+class CombinedReplayBuffer:
+    def __init__(self, capacity):
+        self.buffer = deque(maxlen=capacity)
+
+    def __len__(self):
+        return len(self.buffer)    
+
+    def append(self, transition):
+        self.buffer.append(transition)
+    
+    def sample(self, batch_size):
+        return random.sample(self.buffer, batch_size-1) + self.buffer[-1]
+###MODIFIED###

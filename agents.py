@@ -16,7 +16,7 @@ class ApproximateAgent:
         self.action_space = action_space
         self.epsilon = epsilon
 
-    def get_action(self, state, epsilon=None):
+    def get_action(self, state, epsilon=None, is_table=False):
         """
         Get action chosen by the agent given a state.
         """
@@ -26,9 +26,13 @@ class ApproximateAgent:
         if np.random.random() < epsilon: # Random selection
             return np.random.choice(self.action_space.n)
         else: # Greedy selection
-            state = torch.FloatTensor(state)
-            q_values = self.q_network(state)
-            action = torch.argmax(q_values).item()
+            if not is_table:
+                state = torch.FloatTensor(state)
+                q_values = self.q_network(state)
+                action = torch.argmax(q_values).item()
+            else:
+                q_values = self.q_network[state]
+                action = np.argmax(q_values)
             return action
 
     def get_state_value(self, state):
@@ -114,3 +118,41 @@ class NNBufferQAgent(ApproximateAgent):
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        
+###MODIFIED###
+class TabularBufferQAgent(ApproximateAgent):
+    def __init__(self, q_network, replay_buffer, state_space, action_space, alpha=0.1, epsilon=0.1, gamma=0.999, batch_size=16, min_buffer=0):
+        """
+        Agent that learns action values (Q) through Q-learning method. Assumes
+        Box state space and Discrete action space.
+        """
+        self.state_space = state_space
+        self.action_space = action_space
+        self.alpha = alpha
+        self.epsilon = epsilon
+        self.gamma = gamma
+        self.batch_size = batch_size
+        self.min_buffer = min_buffer
+        self.q_network = q_network
+        self.replay_buffer = replay_buffer
+
+    def learn(self):
+        """
+        Train the agent with a given transition.
+        """
+        if len(self.replay_buffer) < self.batch_size:
+            return
+        if len(self.replay_buffer) < self.min_buffer:
+            return
+
+        transitions = self.replay_buffer.sample(self.batch_size)
+        state_batch, action_batch, next_state_batch, reward_batch, done_batch = zip(*transitions)
+        
+        #TODO: either or
+        for state, action, next_state, reward, done in zip(state_batch, action_batch, next_state_batch, reward_batch, done_batch):
+            self.q_network[state][action] += self.alpha * (reward + self.gamma * max(self.q_network[next_state]) - \
+                                                           self.q_network[state][action])
+        
+#         self.q_network[state_batch][action_batch] += alpha * (reward_batch + gamma * np.max(self.q_network[next_state_batch],axis=1) - \
+#                                                               self.q_network[state_batch][action_batch])
+###MODIFIED###

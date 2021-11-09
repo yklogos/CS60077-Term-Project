@@ -1,4 +1,7 @@
 import gym
+###MODIFIED###
+import gym_minigrid
+###MODIFIED###
 
 class TimeoutWrapper(gym.Wrapper):
     def __init__(self, env, max_steps):
@@ -25,3 +28,14 @@ def get_lunar_lander(max_steps=None, seed=None):
         env.seed(seed)
 
     return env
+
+###MODIFIED###
+def get_grid_world(max_steps=None, seed=None):
+    env = gym.make('MiniGrid-FourRooms-v0')
+    if max_steps:
+        env = TimeoutWrapper(env, max_steps)
+    if seed:
+        env.seed(seed)
+
+    return env
+###MODIFIED###
