@@ -31,7 +31,7 @@ def get_lunar_lander(max_steps=None, seed=None):
 
 ###MODIFIED###
 def get_grid_world(max_steps=None, seed=None):
-    env = gym.make('MiniGrid-Empty-16x16-v0')
+    env = gym.make('MiniGrid-FourRooms-v0')
     if max_steps:
         env = TimeoutWrapper(env, max_steps)
     if seed:

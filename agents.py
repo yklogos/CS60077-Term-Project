@@ -148,7 +148,6 @@ class TabularBufferQAgent(ApproximateAgent):
         transitions = self.replay_buffer.sample(self.batch_size)
         state_batch, action_batch, next_state_batch, reward_batch, done_batch = zip(*transitions)
         
-        #TODO: either or
         for state, action, next_state, reward, done in zip(state_batch, action_batch, next_state_batch, reward_batch, done_batch):
             self.q_network[state][action] += self.alpha * (reward + self.gamma * max(self.q_network[next_state]) - \
                                                            self.q_network[state][action]) 

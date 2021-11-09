@@ -1,11 +1,11 @@
 ###MODIFIED###
 #!/usr/bin/env python3
 
-TODO:
-    1. verify results
-    2. find a way to remove unecessary actions
-    3. implementing -1 reward at each step
-    4. implement PEB
+# TODO:
+#     1. verify results
+#     2. find a way to remove unecessary actions
+#     3. implementing -1 reward at each step
+#     4. implement PEB
 
 import copy
 import gym
@@ -38,7 +38,7 @@ def pos_to_state(pos):  # pos: (row, col)
     return pos[0]*ENV_WIDTH + pos[1]
 
 start_q_network = np.zeros(NUM_STATES, NUM_ACTIONS) # init all values to 0
-# init q_network value of terminal states to 0
+# # init q_network value of terminal states to 0
 # for i,cell in enumerate(env.env.grid.grid):  
 #     if cell is None:
 #         continue
