@@ -7,4 +7,4 @@
 
 ## Implementation
  - Added CER and grid word with Tabular Q learning
- - TODO: timeout or partial-episode-bootstrap (PEB)
+ - TODO: implement timeout with partial-episode-bootstrap (PEB), efficient implementation of MFU cache with random sampling
